@@ -10,7 +10,7 @@ To complete the exercise, fill in the missing functions in the
 1. Setup virtualenv for python `python -m venv venv`.
 2. Activate virtualenv `source venv/bin/activate`.
 3. Install all packages with `pip install -r requirements.txt`.
-4. Move all `.py` files to `$AIRFLOW_HOME/dags` (e.g. `/home/user/airflow/dags`).
+4. Move all `.py` files to `$AIRFLOW_HOME/dags` (e.g. `/home/<user>/airflow/dags`).
 5. Move all data in `raw_data` to `$AIRFLOW_HOME/data/0-raw`.
 6. Start the postgres database with `docker-compose up`.
 7. Setup an `.env` file with credentials for Azure and Postgres, e.g:

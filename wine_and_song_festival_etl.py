@@ -85,16 +85,17 @@ def wine_and_song_festival_etl():
         pass
 
 
-    @task(depends_on_past = True)
-    def transform_to_songplays(data_folder, dataset_name, x):
-        """
-        #### Transform user_data to songplays
-        """
-        from_path = f"{data_folder}/1-extract/{dataset_name}.csv"
-        to_path = f"{data_folder}/2-transform/songplays.csv"
-
-        # TODO Fill in this function
-        pass
+    # There is no elegant way to link songplays to songs, due to the lack of a
+    # song_id in the user_data, hence we'll simply skip this.
+    #
+    #@task(depends_on_past = True)
+    #def transform_to_songplays(data_folder, dataset_name, x):
+    #    """
+    #    #### Transform user_data to songplays
+    #    """
+    #    from_path = f"{data_folder}/1-extract/{dataset_name}.csv"
+    #    to_path = f"{data_folder}/2-transform/songplays.csv"
+    #    pass
 
 
     @task()
@@ -149,6 +150,9 @@ def wine_and_song_festival_etl():
         ts = transform_to_songs(data_folder, 'song_data', xs)
         ta = transform_to_artists(data_folder, 'song_data', xs)
 
+        # Unable to use this as we are missing song_id from user data
+        #tsp = transform_to_songplays(data_folder, 'user_data', x)
+
     with TaskGroup('load') as _:
         with TaskGroup('user') as _:
             load_to_azure(data_folder, 'users', container_name, [tu, w])
@@ -160,12 +164,10 @@ def wine_and_song_festival_etl():
 
         with TaskGroup('song') as _:
             load_to_azure(data_folder, 'songs', container_name, [ts, w])
-            load_to_sql(data_folder, 'songs', [ts, su, sa])
+            ss = load_to_sql(data_folder, 'songs', [ts, su, sa])
 
-
-    # TODO unable to use this as we are missing song_id from user data
-    #transform_to_songplays(data_folder, 'user_data', x)
-    #load_to_azure(data_folder, 'songplays', container_name)
-    #load_to_sql(data_folder, 'songplays')
+        #with TaskGroup('songplays') as _:
+        #    load_to_azure(data_folder, 'songplays', container_name, [tsp, w])
+        #    load_to_sql(data_folder, 'songplays', [tsp, su, sa, ss])
 
 wine_and_song_festival_etl_dag = wine_and_song_festival_etl()
